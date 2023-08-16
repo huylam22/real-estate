@@ -1,7 +1,5 @@
 package com.huylam.realestateserver.controller;
 
-import com.huylam.realestateserver.entity.user.User;
-import com.huylam.realestateserver.repository.auth.UserRepository;
 import com.huylam.realestateserver.service.PhotoUploadService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
