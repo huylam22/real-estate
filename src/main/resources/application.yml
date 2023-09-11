@@ -1,4 +1,9 @@
 spring:
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 100
   config:
     import: optional:secrets.yml
   datasource:
@@ -22,9 +27,9 @@ spring:
 
 cloud:
   aws:
-    # credentials:
-    #   access-key: ${AWS_ACCESS_KEY}
-    #   secret-key: ${AWS_SECRET_KEY}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
     stack:
       auto: false
     secretsmanager:

@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -35,13 +37,8 @@ public class PropertyService {
     return listProperty;
   }
 
-  public List<PropertyDTO> getAllPropertiesDTOService() {
-    List<Property> properties = propertyRepository.findAll();
-    List<PropertyDTO> propertyDTOs = properties
-      .stream()
-      .map(PropertyDTO::new)
-      .collect(Collectors.toList());
-    return propertyDTOs;
+  public Page<PropertyDTO> getAllPropertiesDTOService(Pageable pageable) {
+    return propertyRepository.findAll(pageable).map(PropertyDTO::new);
   }
 
   public PropertyDTO getPropertyDTOByIdService(Long id) {

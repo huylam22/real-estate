@@ -68,13 +68,13 @@ To build and run the project, follow these steps:
 
 ## Properties
 
-- PROD_DB_HOST= YOUR DB HOST
-- PROD_DB_PORT= DB Your DB PORT
-- PROD_DB_NAME= railway
-- PROD_DB_USERNAME= Your DB USERNAME
-- PROD_DB_PASSWORD= Your DB PASSWORD
-- cloud.aws.credentials.access-key= Your AWS ACCESS KEY ID
-- cloud.aws.credentials.secret-key= Your AWS SECRET KEY
+- PROD_DB_HOST= ${YOUR-DB-HOST}
+- PROD_DB_PORT= ${DB-Your-DB-PORT}
+- PROD_DB_NAME= ${Your-DB-NAME}
+- PROD_DB_USERNAME= ${Your-DB-USERNAME}
+- PROD_DB_PASSWORD= ${Your-DB-PASSWORD}
+- cloud.aws.credentials.access-key= ${Your-AWS-ACCESS-KEY-ID}
+- cloud.aws.credentials.secret-key= ${Your-AWS-SECRET-KEY}
 
 ## Acknowledgement
 
@@ -86,5 +86,4 @@ Spring Security:
 @BoualiAli Youtube Chanel
 Git: https://github.com/ali-bouali
 Security Project: https://github.com/ali-bouali/spring-boot-3-jwt-security
-
 Real Estate Photo Upload: https://github.com/arnaugarcia/realstatecamp
