@@ -8,6 +8,7 @@ This is a web-based application that allows real estate agents to create, manage
 
 - CRUD for read write create update and delete properties
   Agent Controller
+- Pagination and Search for real estate
 - Create agent account
 - Authentication and Authorization
 - AWS s3 Bucket for image storage
@@ -27,9 +28,15 @@ Security
 - User registration and login with JWT authentication
 - Password encryption using BCrypt
 - Role-based authorization with Spring Security
-- Customized access denied handling
+- Customized access denied handling and exception error handling
 - Logout mechanism
 - Refresh token
+
+// developing
+
+- Email verification
+- Password reset
+- User profile management
 
 ## Technologies
 
@@ -78,7 +85,9 @@ To build and run the project, follow these steps:
 
 ## Acknowledgement
 
-We would like to thank the Spring community for providing a robust and flexible framework for building web applications. We would also like to thank our mentors and advisors for their guidance and support throughout the development process.
+I would like to thank the Spring community for providing a robust and flexible framework for building web applications. I would also like to thank our mentors and advisors for their guidance and support throughout the development process.
+
+# Developed By Huy Lam
 
 ## References
 
