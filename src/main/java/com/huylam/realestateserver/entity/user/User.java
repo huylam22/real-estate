@@ -12,6 +12,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -34,9 +36,21 @@ public class User implements UserDetails {
   @GeneratedValue
   private Long id;
 
+  @Column(name = "first_name")
+  @NotEmpty(message = "Please provide your first name")
   private String firstname;
+
+  @Column(name = "last_name")
+  @NotEmpty(message = "Please provide your last name")
   private String lastname;
+
+  @Column(name = "email")
+  @Email(message = "Please provide a valid Email")
+  @NotEmpty(message = "Please provide an email")
   private String email;
+
+  @Column(name = "password")
+  @ValidPassword
   private String password;
 
   @Column(name = "avatar_url")

@@ -14,6 +14,7 @@ import com.huylam.realestateserver.repository.auth.UserRepository;
 import com.huylam.realestateserver.service.DTO.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.server.ResponseStatusException;
 
 @Service
@@ -32,7 +34,7 @@ import org.springframework.web.server.ResponseStatusException;
 public class AuthenticationService {
 
   @Autowired
-  private final UserRepository repository;
+  private final UserRepository userRepository;
 
   @Autowired
   private final TokenRepository tokenRepository;
@@ -46,7 +48,24 @@ public class AuthenticationService {
   @Autowired
   private final AuthenticationManager authenticationManager;
 
-  public AuthenticationResponse register(RegisterRequest request) {
+  public AuthenticationResponse register(
+    @Valid RegisterRequest request,
+    BindingResult bindingResult
+  ) {
+    if (bindingResult.hasErrors()) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Invalid request"
+      );
+    }
+    // Check if the email is already registered
+    if (userRepository.findByEmail(request.getEmail()).isPresent()) {
+      throw new ResponseStatusException(
+        HttpStatus.BAD_REQUEST,
+        "Email already registered"
+      );
+    }
+
     Role defaultRole = Role.USER;
     Role userRole = request.getRole() != null ? request.getRole() : defaultRole;
     var user = User
@@ -57,7 +76,7 @@ public class AuthenticationService {
       .password(passwordEncoder.encode(request.getPassword()))
       .role(userRole)
       .build();
-    var savedUser = repository.save(user);
+    var savedUser = userRepository.save(user);
     var jwtToken = jwtService.generateToken(user);
     var refreshToken = jwtService.generateRefreshToken(user);
     UserDTO userDTO = new UserDTO(user); // Create UserDTO from User object
@@ -84,7 +103,7 @@ public class AuthenticationService {
       throw new AuthenticationServiceException("Invalid email or password");
     }
 
-    var user = repository
+    var user = userRepository
       .findByEmail(request.getEmail())
       .orElseThrow(() ->
         new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found")
@@ -141,7 +160,7 @@ public class AuthenticationService {
     refreshToken = authHeader.substring(7);
     userEmail = jwtService.extractUsername(refreshToken);
     if (userEmail != null) {
-      var user = this.repository.findByEmail(userEmail).orElseThrow();
+      var user = this.userRepository.findByEmail(userEmail).orElseThrow();
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);

@@ -36,6 +36,7 @@ public class JwtService {
   }
 
   public String generateToken(UserDetails userDetails) {
+    validatePassword(userDetails.getPassword());
     return generateToken(new HashMap<>(), userDetails);
   }
 
@@ -43,10 +44,12 @@ public class JwtService {
     Map<String, Object> extraClaims,
     UserDetails userDetails
   ) {
+    validatePassword(userDetails.getPassword());
     return buildToken(extraClaims, userDetails, jwtExpiration);
   }
 
   public String generateRefreshToken(UserDetails userDetails) {
+    validatePassword(userDetails.getPassword());
     return buildToken(new HashMap<>(), userDetails, refreshExpiration);
   }
 
@@ -92,5 +95,13 @@ public class JwtService {
   private Key getSignInKey() {
     byte[] keyBytes = Decoders.BASE64.decode(secretKey);
     return Keys.hmacShaKeyFor(keyBytes);
+  }
+
+  private void validatePassword(String password) {
+    if (password == null || password.trim().isEmpty()) {
+      throw new PasswordValidationException(
+        "Password cannot be empty or blank"
+      );
+    }
   }
 }

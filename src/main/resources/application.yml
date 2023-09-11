@@ -6,6 +6,9 @@ spring:
         max-page-size: 100
   config:
     import: optional:secrets.yml
+  # ==============================================================
+  # = Data Source
+  # ==============================================================
   datasource:
     # url: jdbc:mysql://localhost:3306/real_estate
     # username: root
@@ -15,6 +18,9 @@ spring:
     password: ${PROD_DB_PASSWORD}
     name: real-estate-spring-boot
     driver-class-name: com.mysql.cj.jdbc.Driver
+  # ==============================================================
+  # = Hibernate ddl auto (create, create-drop, update)
+  # ==============================================================
   jpa:
     hibernate:
       ddl-auto: update
