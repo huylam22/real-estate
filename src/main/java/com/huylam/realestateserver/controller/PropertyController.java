@@ -13,6 +13,9 @@ import com.huylam.realestateserver.service.DTO.PropertyDTO;
 import com.huylam.realestateserver.service.PropertyService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.headers.Header;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,6 +25,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -32,6 +40,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -59,7 +68,7 @@ public class PropertyController {
 
   @Operation(
     summary = "Get all properties",
-    description = "Returns all properties with specified DTO format",
+    description = "Returns a paginated list of properties in the specified DTO format.",
     tags = { "property-controller" }
   )
   @ApiResponses(
@@ -67,30 +76,62 @@ public class PropertyController {
       @ApiResponse(
         responseCode = "200",
         description = "successful operation",
-        content = @Content(schema = @Schema(implementation = Property.class))
+        content = @Content(
+          schema = @Schema(implementation = PropertyDTO.class)
+        ),
+        headers = {
+          @Header(
+            name = "X-Total-Count",
+            description = "Total number of properties"
+          ),
+        }
       ),
       @ApiResponse(
         responseCode = "404",
-        description = "Error",
+        description = "Not Found",
+        content = @Content
+      ),
+      @ApiResponse(
+        responseCode = "500",
+        description = "Internal Server Error",
         content = @Content
       ),
     }
   )
-  @GetMapping({ "/properties" })
-  public ResponseEntity<List<PropertyDTO>> getAllProperties() {
+  @Parameters(
+    {
+      @Parameter(
+        name = "page",
+        in = ParameterIn.QUERY,
+        description = "Page number for pagination",
+        required = false,
+        schema = @Schema(type = "integer", defaultValue = "0")
+      ),
+      @Parameter(
+        name = "size",
+        in = ParameterIn.QUERY,
+        description = "Number of records per page",
+        required = false,
+        schema = @Schema(type = "integer", defaultValue = "10")
+      ),
+      @Parameter(
+        name = "sort",
+        in = ParameterIn.QUERY,
+        description = "Sorting criteria in the format: property,(asc|desc). Default is ascending. Multiple sort criteria are supported.",
+        required = false,
+        schema = @Schema(type = "string", defaultValue = "id,asc")
+      ),
+    }
+  )
+  @GetMapping("/properties")
+  public ResponseEntity<Page<PropertyDTO>> getAllProperties(Pageable pageable) {
     try {
-      List<PropertyDTO> propertyDTOs =
-        propertyService.getAllPropertiesDTOService();
+      Page<PropertyDTO> propertyDTOs =
+        propertyService.getAllPropertiesDTOService(pageable);
       return new ResponseEntity<>(propertyDTOs, HttpStatus.OK);
     } catch (Exception e) {
-      // TODO: handle exception
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
     }
-  }
-
-  @GetMapping("/properties/count")
-  public long countAllRealEstates() {
-    return propertyService.countAllPropertiesService();
   }
 
   @Operation(
