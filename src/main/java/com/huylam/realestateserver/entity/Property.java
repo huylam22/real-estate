@@ -88,6 +88,10 @@ public class Property {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   private LocalDateTime createdDate;
 
+  @Column(name = "updated_date")
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+  private LocalDateTime updatedDate;
+
   @ManyToOne
   @JoinColumn(name = "province_id")
   @JsonBackReference(value = "province-property")

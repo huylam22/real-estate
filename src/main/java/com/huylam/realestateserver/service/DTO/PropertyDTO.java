@@ -43,6 +43,9 @@ public class PropertyDTO {
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
   private LocalDateTime createdDate;
 
+  @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+  private LocalDateTime updatedDate;
+
   @Autowired
   public PropertyDTO(Property property) {
     this.id = property.getId();
@@ -66,6 +69,7 @@ public class PropertyDTO {
     this.districtPrefix = property.getDistrict().getDistrictPrefix();
     this.districtName = property.getDistrict().getDistrictName();
     this.createdDate = property.getCreatedDate();
+    this.updatedDate = property.getUpdatedDate();
     this.propertyBathrooms = property.getPropertyBathrooms();
     this.propertyBedrooms = property.getPropertyBedrooms();
     this.propertyCoverPaths = property.getPropertyCoverPaths();

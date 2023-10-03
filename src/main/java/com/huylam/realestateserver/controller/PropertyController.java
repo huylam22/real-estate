@@ -124,10 +124,23 @@ public class PropertyController {
     }
   )
   @GetMapping("/properties")
-  public ResponseEntity<Page<PropertyDTO>> getAllProperties(Pageable pageable) {
+  public ResponseEntity<Page<PropertyDTO>> getAllProperties(
+    @RequestParam(
+      name = "propertyPostingStatus",
+      required = false
+    ) String propertyPostingStatus,
+    @RequestParam(
+      name = "propertyLandType",
+      required = false
+    ) String propertyLandType,
+    Pageable pageable
+  ) {
     try {
-      Page<PropertyDTO> propertyDTOs =
-        propertyService.getAllPropertiesDTOService(pageable);
+      Page<PropertyDTO> propertyDTOs = propertyService.getFilteredProperties(
+        propertyPostingStatus,
+        propertyLandType,
+        pageable
+      );
       return new ResponseEntity<>(propertyDTOs, HttpStatus.OK);
     } catch (Exception e) {
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -165,7 +178,7 @@ public class PropertyController {
       required = true
     ) long propertyId
   ) {
-    Optional<Property> propertyData = propertyRepository.findById(propertyId);
+    Optional<Property> propertyData = propertyRepository.findById(propertyId); // SELECT * FROM property WHERE property_id = 1;
     if (propertyData.isPresent()) {
       try {
         PropertyDTO property = propertyService.getPropertyDTOByIdService(
@@ -257,64 +270,22 @@ public class PropertyController {
     @RequestBody Property paramProperty
   ) {
     try {
-      Optional<Province> propertyProvince = provinceRepository.findById(
-        provinceId
+      Property savedProperty = propertyService.createPropertyService(
+        districtId,
+        provinceId,
+        userId,
+        paramProperty
       );
-      Optional<District> propertyDistrict = districtRepository.findById(
-        districtId
-      );
-      Optional<User> propertyUser = userRepository.findById(userId);
-      if (propertyDistrict.isPresent() && propertyUser.isPresent()) {
-        Property newProperty = new Property();
-        newProperty.setPropertyAddressNumber(
-          paramProperty.getPropertyAddressNumber()
-        );
-        newProperty.setPropertyAddressStreet(
-          paramProperty.getPropertyAddressStreet()
-        );
-        newProperty.setPropertyArea(paramProperty.getPropertyArea());
-        newProperty.setPropertyDescription(
-          paramProperty.getPropertyDescription()
-        );
-        newProperty.setPropertyFloorLocation(
-          paramProperty.getPropertyFloorLocation()
-        );
-        newProperty.setPropertyFloorUnits(
-          paramProperty.getPropertyFloorUnits()
-        );
-        newProperty.setPropertyLandDirection(
-          paramProperty.getPropertyLandDirection()
-        );
-        newProperty.setPropertyLandLegalStatus(
-          paramProperty.getPropertyLandLegalStatus()
-        );
-        newProperty.setPropertyLandType(paramProperty.getPropertyLandType());
-        newProperty.setPropertyLength(paramProperty.getPropertyLength());
-        newProperty.setPropertyPostingStatus(
-          paramProperty.getPropertyPostingStatus()
-        );
-        newProperty.setPropertyPrice(paramProperty.getPropertyPrice());
-        newProperty.setPropertyWidth(paramProperty.getPropertyWidth());
-        newProperty.setPropertyBedrooms(paramProperty.getPropertyBedrooms());
-        newProperty.setPropertyBathrooms(paramProperty.getPropertyBathrooms());
-        newProperty.setCreatedDate(LocalDateTime.now());
-
-        Province _province = propertyProvince.get();
-        District _district = propertyDistrict.get();
-        User _user = propertyUser.get();
-        newProperty.setProvince(_province);
-        newProperty.setDistrict(_district);
-        newProperty.setUser(_user);
-        Property savedProperty = propertyRepository.save(newProperty);
+      if (savedProperty != null) {
         return new ResponseEntity<>(savedProperty, HttpStatus.CREATED);
+      } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
     } catch (Exception e) {
       // TODO: handle exception
       System.out.println(
         "+++++++++++++++++++++::::: " + e.getCause().getCause().getMessage()
       );
-      //Hiện thông báo lỗi tra back-end
-      //return new ResponseEntity<>(e.getCause().getCause().getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
       return ResponseEntity
         .unprocessableEntity()
         .body(
@@ -322,7 +293,6 @@ public class PropertyController {
           e.getCause().getCause().getMessage()
         );
     }
-    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
   }
 
   @Operation(
@@ -350,41 +320,11 @@ public class PropertyController {
     @PathVariable("id") Long id,
     @RequestBody Property paramProperty
   ) {
-    Optional<Property> propertyData = propertyRepository.findById(id);
-    if (propertyData.isPresent()) {
-      Property newProperty = propertyData.get();
-      newProperty.setPropertyAddressNumber(
-        paramProperty.getPropertyAddressNumber()
-      );
-      newProperty.setPropertyAddressStreet(
-        paramProperty.getPropertyAddressStreet()
-      );
-      newProperty.setPropertyArea(paramProperty.getPropertyArea());
-      newProperty.setPropertyDescription(
-        paramProperty.getPropertyDescription()
-      );
-      newProperty.setPropertyFloorLocation(
-        paramProperty.getPropertyFloorLocation()
-      );
-      newProperty.setPropertyFloorUnits(paramProperty.getPropertyFloorUnits());
-      newProperty.setPropertyLandDirection(
-        paramProperty.getPropertyLandDirection()
-      );
-      newProperty.setPropertyLandLegalStatus(
-        paramProperty.getPropertyLandLegalStatus()
-      );
-      newProperty.setPropertyLandType(paramProperty.getPropertyLandType());
-      newProperty.setPropertyLength(paramProperty.getPropertyLength());
-      newProperty.setPropertyPostingStatus(
-        paramProperty.getPropertyPostingStatus()
-      );
-      newProperty.setPropertyPrice(paramProperty.getPropertyPrice());
-      newProperty.setPropertyWidth(paramProperty.getPropertyWidth());
-      Property savedEmployee = propertyRepository.save(newProperty);
-      return new ResponseEntity<>(savedEmployee, HttpStatus.OK);
-    } else {
-      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-    }
+    Property savedProperty = propertyService.updatePropertyService(
+      id,
+      paramProperty
+    );
+    return new ResponseEntity<>(savedProperty, HttpStatus.OK);
   }
 
   @Operation(
@@ -440,36 +380,3 @@ public class PropertyController {
     }
   }
 }
-// @GetMapping("/properties/{propertyId}") //// OLD ERROR WITH NOT FOUND PROPERTY (Not showing not found message)
-// public ResponseEntity<PropertyDTO> getProperty(
-//   @PathVariable(value = "propertyId", required = true) long propertyId
-// ) {
-//   PropertyDTO property = propertyService.getPropertyDTOByIdService(
-//     propertyId
-//   ); // implement this method in your service layer to get the property by id
-//   if (property == null) {
-//     return ResponseEntity.notFound().build();
-//   } else {
-//     return ResponseEntity.ok(property);
-//   }
-// }
-// @GetMapping("/properties/details/{propertyId}")
-// public ResponseEntity<Object> getPropertyById(
-//   @PathVariable(value = "propertyId", required = true) long id
-// ) {
-//   Optional<Property> propertyData = propertyRepository.findById(id);
-//   if (propertyData.isPresent()) {
-//     try {
-//       Property property = propertyData.get();
-//       return new ResponseEntity<>(property, HttpStatus.OK);
-//     } catch (Exception e) {
-//       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//     }
-//   } else {
-//     // Property propertyNull = new Property();
-//     return new ResponseEntity<>(
-//       "Property with id " + id + " not found",
-//       HttpStatus.NOT_FOUND
-//     );
-//   }
-// }
