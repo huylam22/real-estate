@@ -1,6 +1,5 @@
 package com.huylam.realestateserver.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.huylam.realestateserver.config.auth.JwtService;
 import com.huylam.realestateserver.entity.auth.AuthenticationRequest;
 import com.huylam.realestateserver.entity.auth.AuthenticationResponse;
@@ -13,9 +12,7 @@ import com.huylam.realestateserver.repository.auth.TokenRepository;
 import com.huylam.realestateserver.repository.auth.UserRepository;
 import com.huylam.realestateserver.service.DTO.UserDTO;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +21,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
@@ -147,33 +145,68 @@ public class AuthenticationService {
     tokenRepository.saveAll(validUserTokens);
   }
 
-  public void refreshToken(
-    HttpServletRequest request,
-    HttpServletResponse response
-  ) throws IOException {
+  // public void refreshToken(
+  //   HttpServletRequest request,
+  //   HttpServletResponse response
+  // ) throws IOException {
+  //   final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+  //   final String refreshToken;
+  //   final String userEmail;
+  //   if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+  //     return;
+  //   }
+  //   refreshToken = authHeader.substring(7);
+  //   userEmail = jwtService.extractUsername(refreshToken);
+  //   if (userEmail != null) {
+  //     var user = this.userRepository.findByEmail(userEmail).orElseThrow();
+  //     if (jwtService.isTokenValid(refreshToken, user)) {
+  //       var accessToken = jwtService.generateToken(user);
+  //       revokeAllUserTokens(user);
+  //       saveUserToken(user, accessToken);
+  //       var userDTO = new UserDTO(user);
+  //       var authResponse = AuthenticationResponse
+  //         .builder()
+  //         .user(userDTO)
+  //         .accessToken(accessToken)
+  //         .refreshToken(refreshToken)
+  //         .build();
+  //       new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+  //     }
+  //   }
+  // }
+  public AuthenticationResponse refreshToken(HttpServletRequest request) {
     final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
     final String refreshToken;
     final String userEmail;
+
     if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-      return;
+      // Handle invalid or missing authorization header
+      throw new RuntimeException("Invalid or missing authorization header");
     }
+
     refreshToken = authHeader.substring(7);
     userEmail = jwtService.extractUsername(refreshToken);
+
     if (userEmail != null) {
-      var user = this.userRepository.findByEmail(userEmail).orElseThrow();
+      var user = userRepository
+        .findByEmail(userEmail)
+        .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
       if (jwtService.isTokenValid(refreshToken, user)) {
         var accessToken = jwtService.generateToken(user);
         revokeAllUserTokens(user);
         saveUserToken(user, accessToken);
         var userDTO = new UserDTO(user);
-        var authResponse = AuthenticationResponse
+        return AuthenticationResponse
           .builder()
           .user(userDTO)
           .accessToken(accessToken)
           .refreshToken(refreshToken)
           .build();
-        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
       }
     }
+
+    // Handle invalid refresh token or user not found
+    throw new RuntimeException("Invalid refresh token or user not found");
   }
 }

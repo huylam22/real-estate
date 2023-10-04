@@ -1,5 +1,6 @@
 package com.huylam.realestateserver.entity.token;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.huylam.realestateserver.entity.user.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,5 +39,6 @@ public class Token {
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
+  @JsonIgnore
   public User user;
 }

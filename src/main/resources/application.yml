@@ -10,6 +10,9 @@ spring:
   # = Data Source
   # ==============================================================
   datasource:
+    # url: jdbc:mysql://localhost:3307/real_estate
+    # username: real_estate
+    # password: your_password_here
     # url: jdbc:mysql://localhost:3306/real_estate
     # username: root
     # password:
@@ -33,9 +36,9 @@ spring:
 
 cloud:
   aws:
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
+    # credentials:
+    #   access-key: ${AWS_ACCESS_KEY}
+    #   secret-key: ${AWS_SECRET_KEY}
     stack:
       auto: false
     secretsmanager:
@@ -49,7 +52,7 @@ application:
     name: huy-property-images
   security:
     jwt:
-      secret-key: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+      # secret-key: ${JWT_SECRET_KEY}
       expiration: 86400000 # 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days

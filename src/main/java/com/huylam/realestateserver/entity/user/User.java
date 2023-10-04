@@ -1,5 +1,6 @@
 package com.huylam.realestateserver.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.huylam.realestateserver.entity.Property;
 import com.huylam.realestateserver.entity.token.Token;
@@ -60,6 +61,7 @@ public class User implements UserDetails {
   private Role role;
 
   @OneToMany(mappedBy = "user")
+  @JsonIgnore
   private List<Token> tokens;
 
   @OneToMany(

@@ -64,6 +64,25 @@ public class DistrictController {
     }
   }
 
+  @GetMapping("/details/province/{provinceId}")
+  public ResponseEntity<List<District>> getDistrictsByProvinceId(
+    @PathVariable("provinceId") int provinceId
+  ) {
+    try {
+      List<District> districts = districtRepository.findByProvinceId(
+        provinceId
+      );
+      if (!districts.isEmpty()) {
+        return new ResponseEntity<>(districts, HttpStatus.OK);
+      } else {
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+    } catch (Exception e) {
+      // Handle exceptions appropriately, e.g., log the error
+      return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   // Tạo MỚI District sử dụng phương thức POST
   //  @CrossOrigin
   @PostMapping("/create/{id}") // Dùng phương thức POST
