@@ -52,7 +52,7 @@ application:
     name: huy-property-images
   security:
     jwt:
-      # secret-key: ${JWT_SECRET_KEY}
+      secret-key: ${JWT_SECRET_KEY}
       expiration: 86400000 # 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
