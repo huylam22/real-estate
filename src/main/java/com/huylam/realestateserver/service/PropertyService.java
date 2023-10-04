@@ -9,6 +9,7 @@ import com.huylam.realestateserver.repository.PropertyRepository;
 import com.huylam.realestateserver.repository.ProvinceRepository;
 import com.huylam.realestateserver.repository.auth.UserRepository;
 import com.huylam.realestateserver.service.DTO.PropertyDTO;
+import com.huylam.realestateserver.service.DTO.UserDTO;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -91,68 +92,6 @@ public class PropertyService {
     this.districtRepository = districtRepository;
     this.propertyRepository = propertyRepository;
   }
-
-  // public Property createProperty(
-  //   int provinceId,
-  //   int districtId,
-  //   Long userId,
-  //   Property paramProperty
-  // ) {
-  //   Optional<Province> propertyProvince = provinceRepository.findById(
-  //     provinceId
-  //   );
-  //   Optional<District> propertyDistrict = districtRepository.findById(
-  //     districtId
-  //   );
-  //   Optional<User> propertyUser = userRepository.findById(userId);
-
-  //   if (propertyDistrict.isPresent()) {
-  //     Property newProperty = new Property();
-  //     newProperty.setPropertyAddressNumber(
-  //       paramProperty.getPropertyAddressNumber()
-  //     );
-  //     newProperty.setPropertyAddressStreet(
-  //       paramProperty.getPropertyAddressStreet()
-  //     );
-  //     newProperty.setPropertyArea(paramProperty.getPropertyArea());
-  //     newProperty.setPropertyDescription(
-  //       paramProperty.getPropertyDescription()
-  //     );
-  //     newProperty.setPropertyFloorLocation(
-  //       paramProperty.getPropertyFloorLocation()
-  //     );
-  //     newProperty.setPropertyFloorUnits(paramProperty.getPropertyFloorUnits());
-  //     newProperty.setPropertyLandDirection(
-  //       paramProperty.getPropertyLandDirection()
-  //     );
-  //     newProperty.setPropertyLandLegalStatus(
-  //       paramProperty.getPropertyLandLegalStatus()
-  //     );
-  //     newProperty.setPropertyLandType(paramProperty.getPropertyLandType());
-  //     newProperty.setPropertyLength(paramProperty.getPropertyLength());
-  //     newProperty.setPropertyPostingStatus(
-  //       paramProperty.getPropertyPostingStatus()
-  //     );
-  //     newProperty.setPropertyPrice(paramProperty.getPropertyPrice());
-  //     newProperty.setPropertyWidth(paramProperty.getPropertyWidth());
-  //     newProperty.setPropertyBedrooms(paramProperty.getPropertyBedrooms());
-  //     newProperty.setPropertyBathrooms(paramProperty.getPropertyBathrooms());
-  //     newProperty.setCreatedDate(LocalDateTime.now());
-
-  //     Province _province = propertyProvince.get();
-  //     District _district = propertyDistrict.get();
-  //     User _user = propertyUser.get();
-  //     newProperty.setProvince(_province);
-  //     newProperty.setDistrict(_district);
-  //     newProperty.setUser(_user);
-  //     newProperty.setCreatedDate(LocalDateTime.now());
-
-  //     return propertyRepository.save(newProperty);
-  //   }
-  //   throw new EntityNotFoundException(
-  //     "District not found with id " + districtId
-  //   );
-  // }
 
   public Property createPropertyService(
     int districtId,
