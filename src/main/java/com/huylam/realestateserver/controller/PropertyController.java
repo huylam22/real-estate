@@ -30,6 +30,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Order;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -44,7 +45,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@CrossOrigin
 @RequestMapping("/api/v1")
 public class PropertyController {
 
@@ -259,6 +259,7 @@ public class PropertyController {
     }
   )
   @PostMapping("/properties/create/{provinceId}/{districtId}/{userId}")
+  @CrossOrigin(origins = "http://127.0.0.1:5173", allowCredentials = "true")
   public ResponseEntity<Object> createProperty(
     @Parameter(description = "District ID") @PathVariable(
       "districtId"
@@ -277,7 +278,12 @@ public class PropertyController {
         paramProperty
       );
       if (savedProperty != null) {
-        return new ResponseEntity<>(savedProperty, HttpStatus.CREATED);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("X-Get-Header", "ExampleHeader");
+        return ResponseEntity
+          .status(HttpStatus.CREATED)
+          .headers(headers)
+          .body(savedProperty);
       } else {
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }

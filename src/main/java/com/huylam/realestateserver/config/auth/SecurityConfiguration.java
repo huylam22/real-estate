@@ -5,6 +5,7 @@ import static com.huylam.realestateserver.entity.user.Role.ADMIN;
 import static com.huylam.realestateserver.entity.user.Role.MANAGER;
 import static org.springframework.http.HttpMethod.*;
 
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -102,14 +103,4 @@ public class SecurityConfiguration {
 
     return http.build();
   }
-  // @Bean
-  // CorsConfigurationSource corsConfigurationSource() {
-  //   CorsConfiguration configuration = new CorsConfiguration();
-  //   configuration.setAllowedOrigins(Arrays.asList("https://example.com"));
-  //   configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-  //   UrlBasedCorsConfigurationSource source =
-  //     new UrlBasedCorsConfigurationSource();
-  //   source.registerCorsConfiguration("/**", configuration);
-  //   return source;
-  // }
 }
