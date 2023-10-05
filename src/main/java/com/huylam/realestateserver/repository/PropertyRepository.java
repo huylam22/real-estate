@@ -5,6 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
   List<Property> findByPropertyLandType(String propertyLandType);
@@ -12,9 +14,14 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     String propertyLandType,
     Pageable pageable
   );
+
+  @Query(
+    "SELECT p FROM Property p WHERE LOWER(p.propertyPostingStatus) LIKE LOWER(concat('%', :status, '%'))"
+  )
   Page<Property> findByPropertyPostingStatus(
-    String propertyPostingStatus,
+    @Param("status") String propertyPostingStatus,
     Pageable pageable
   );
+
   long count();
 }
