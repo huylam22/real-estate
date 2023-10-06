@@ -10,8 +10,12 @@ import org.springframework.data.repository.query.Param;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
   List<Property> findByPropertyLandType(String propertyLandType);
+
+  @Query(
+    "SELECT p FROM Property p WHERE LOWER(p.propertyLandType) IN :propertyLandTypes"
+  )
   Page<Property> findByPropertyLandType(
-    String propertyLandType,
+    @Param("propertyLandTypes") List<String> propertyLandType,
     Pageable pageable
   );
 
@@ -22,6 +26,9 @@ public interface PropertyRepository extends JpaRepository<Property, Long> {
     @Param("status") String propertyPostingStatus,
     Pageable pageable
   );
+
+  // Method to find properties by user ID with pagination
+  Page<Property> findByUserId(Long userId, Pageable pageable);
 
   long count();
 }
