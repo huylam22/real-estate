@@ -63,4 +63,13 @@ public class GlobalExceptionHandler {
     errorResponse.put("errorMessage", errorMessage);
     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
   }
+
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<Map<String, String>> handleRuntimeException(
+    RuntimeException ex
+  ) {
+    Map<String, String> errorResponse = new HashMap<>();
+    errorResponse.put("errorMessage", ex.getMessage());
+    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+  }
 }

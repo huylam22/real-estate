@@ -11,6 +11,7 @@ import com.huylam.realestateserver.repository.WardRepository;
 import com.huylam.realestateserver.repository.auth.UserRepository;
 import com.huylam.realestateserver.service.DTO.PropertyDTO;
 import com.huylam.realestateserver.service.PropertyService;
+import com.huylam.realestateserver.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.Parameters;
@@ -20,8 +21,10 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,6 +68,9 @@ public class PropertyController {
 
   @Autowired
   UserRepository userRepository;
+
+  @Autowired
+  UserService userService;
 
   @Operation(
     summary = "Get all properties",
@@ -136,9 +142,14 @@ public class PropertyController {
     Pageable pageable
   ) {
     try {
+      List<String> propertyLandTypes = null;
+      if (propertyLandType != null && !propertyLandType.isEmpty()) {
+        propertyLandTypes = Arrays.asList(propertyLandType.split(","));
+      }
+
       Page<PropertyDTO> propertyDTOs = propertyService.getFilteredProperties(
         propertyPostingStatus,
-        propertyLandType,
+        propertyLandTypes,
         pageable
       );
       return new ResponseEntity<>(propertyDTOs, HttpStatus.OK);
@@ -383,6 +394,26 @@ public class PropertyController {
     } catch (Exception e) {
       System.out.println(e);
       return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  @GetMapping("/properties/user/{userId}")
+  // Endpoint to get properties by user ID with pagination
+  public Page<Property> getPropertiesByUserId(
+    @PathVariable Long userId,
+    Pageable pageable,
+    HttpServletRequest request
+  ) {
+    // Get authenticated user's information from JWT token
+    var authenticatedUser = userService.getUserInfoByAccessToken(request);
+
+    // Check if the authenticated user's ID matches the requested userId
+    if (authenticatedUser.getId() == userId) {
+      // If it matches, return the properties for the requested user
+      return propertyService.getPropertiesByUserId(userId, pageable);
+    } else {
+      // If it doesn't match, handle unauthorized access
+      throw new RuntimeException("Unauthorized access to user's properties");
     }
   }
 }

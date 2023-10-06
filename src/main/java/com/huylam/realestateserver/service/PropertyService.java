@@ -51,7 +51,7 @@ public class PropertyService {
 
   public Page<PropertyDTO> getFilteredProperties(
     String propertyPostingStatus,
-    String propertyLandType,
+    List<String> propertyLandType,
     Pageable pageable
   ) {
     Page<Property> properties;
@@ -192,5 +192,10 @@ public class PropertyService {
       return savedProperty;
     }
     return null;
+  }
+
+  // Service method to get properties by user ID with pagination
+  public Page<Property> getPropertiesByUserId(Long userId, Pageable pageable) {
+    return propertyRepository.findByUserId(userId, pageable);
   }
 }
