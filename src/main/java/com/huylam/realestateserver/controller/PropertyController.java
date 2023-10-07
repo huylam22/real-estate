@@ -269,7 +269,7 @@ public class PropertyController {
       ),
     }
   )
-  @PostMapping("/properties/create/{provinceId}/{districtId}/{userId}")
+  @PostMapping("/property/create/{provinceId}/{districtId}/{userId}")
   @CrossOrigin(origins = "http://127.0.0.1:5173", allowCredentials = "true")
   public ResponseEntity<Object> createProperty(
     @Parameter(description = "District ID") @PathVariable(
@@ -332,7 +332,7 @@ public class PropertyController {
     }
   )
   @CrossOrigin
-  @PutMapping("/update/{id}")
+  @PutMapping("/property/update/{id}")
   public ResponseEntity<Object> updateProperty(
     @PathVariable("id") Long id,
     @RequestBody Property paramProperty
