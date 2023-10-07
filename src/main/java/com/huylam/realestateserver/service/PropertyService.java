@@ -187,6 +187,8 @@ public class PropertyService {
       );
       newProperty.setPropertyPrice(paramProperty.getPropertyPrice());
       newProperty.setPropertyWidth(paramProperty.getPropertyWidth());
+      newProperty.setPropertyBedrooms(paramProperty.getPropertyBedrooms());
+      newProperty.setPropertyBathrooms(paramProperty.getPropertyBathrooms());
       newProperty.setUpdatedDate(LocalDateTime.now());
       Property savedProperty = propertyRepository.save(newProperty);
       return savedProperty;
